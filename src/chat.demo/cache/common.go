@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-16 21:28:11
+ * @LastEditTime: 2025-01-17 14:53:51
  */
 package cache
 
@@ -42,8 +42,9 @@ func LoadRedis(file *ini.File) {
 func Redis() {
 	db, _ := strconv.ParseUint(RedisDbName, 10, 64) // string to 64
 	client := redis.NewClient(&redis.Options{
-		Addr: RedisAddr,
-		DB:   int(db),
+		Addr:     RedisAddr,
+		Password: RedisPw,
+		DB:       int(db),
 	})
 	_, err := client.Ping().Result()
 	if err != nil {

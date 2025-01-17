@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-16 22:13:18
+ * @LastEditTime: 2025-01-17 14:33:20
  */
 package conf
 
@@ -67,7 +67,7 @@ func MongoDB() {
 
 func LoadServer(file *ini.File) {
 	AppMode = file.Section("service").Key("AppMode").String()
-	HttpPort = file.Section("service").Key("HttpPort ").String()
+	HttpPort = file.Section("service").Key("HttpPort").String()
 }
 
 func LoadMySQL(file *ini.File) {
