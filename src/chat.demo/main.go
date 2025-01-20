@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-17 14:34:30
+ * @LastEditTime: 2025-01-20 17:58:32
  */
 package main
 
@@ -14,4 +14,5 @@ func main() {
 
 	r := router.NewRouter()
 	_ = r.Run(conf.HttpPort)
+
 }

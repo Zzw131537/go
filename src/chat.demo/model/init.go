@@ -1,3 +1,7 @@
+/*
+ * @Author: Zhouzw
+ * @LastEditTime: 2025-01-20 17:59:07
+ */
 package model
 
 import (
@@ -28,5 +32,5 @@ func Database(connString string) {
 	db.DB().SetMaxOpenConns(100) //设置打开最大连接
 	db.DB().SetConnMaxLifetime(time.Second * 30)
 	DB = db
-	migration()
+	Migration()
 }
