@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-20 18:21:19
+ * @LastEditTime: 2025-01-21 19:23:31
  */
 package router
 
@@ -22,7 +22,7 @@ func NewRouter() *gin.Engine {
 			c.JSON(200, "success")
 		})
 		v1.POST("user/register", api.UserRegister)
-		v1.POST("ws", service.Handler)
+		v1.GET("ws", service.Handler)
 	}
 	return r
 }

@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-17 14:53:51
+ * @LastEditTime: 2025-01-21 18:54:08
  */
 package cache
 
@@ -23,7 +23,7 @@ var (
 )
 
 func init() {
-	file, err := ini.Load("./congig/config.ini") // 加载配置信息文件
+	file, err := ini.Load("C:/Users/86131/go/src/chat.demo/conf/config.ini") // 加载配置信息文件
 	if err != nil {
 		fmt.Println("ini Load failed", err)
 
