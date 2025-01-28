@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-17 14:33:20
+ * @LastEditTime: 2025-01-28 18:02:08
  */
 package conf
 
@@ -55,14 +55,18 @@ func Init() {
 }
 
 func MongoDB() {
+	// 设置mongoDB客户端连接信息
 	clientOptions := options.Client().ApplyURI("mongodb://" + MongoDBAddr + ":" + MongoDBPort)
 	var err error
 	MongoDBClient, err = mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		logging.Info(err)
-		panic(err)
 	}
-	logging.Info("MongoDB Connect Successfully")
+	err = MongoDBClient.Ping(context.TODO(), nil)
+	if err != nil {
+		logging.Info(err)
+	}
+	logging.Info("MongoDB Connect")
 }
 
 func LoadServer(file *ini.File) {

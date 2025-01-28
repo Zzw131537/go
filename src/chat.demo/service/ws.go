@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-01-21 19:14:33
+ * @LastEditTime: 2025-01-28 17:30:28
  */
 package service
 
@@ -9,6 +9,7 @@ import (
 	"chat/pkg/e"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 
@@ -36,7 +37,7 @@ type Client struct {
 	Send   chan []byte
 }
 
-type Boradcast struct {
+type Broadcast struct {
 	Client  *Client
 	Message []byte
 	Type    int
@@ -44,7 +45,7 @@ type Boradcast struct {
 
 type ClientManager struct {
 	Clients    map[string]*Client
-	Boradcast  chan *Boradcast
+	Boradcast  chan *Broadcast
 	Reply      chan *Client
 	Register   chan *Client
 	Unregister chan *Client
@@ -58,7 +59,7 @@ type Message struct {
 
 var Manager = ClientManager{
 	Clients:    make(map[string]*Client), // 参与连接的用户
-	Boradcast:  make(chan *Boradcast),
+	Boradcast:  make(chan *Broadcast),
 	Reply:      make(chan *Client),
 	Register:   make(chan *Client),
 	Unregister: make(chan *Client),
@@ -93,50 +94,44 @@ func Handler(c *gin.Context) {
 }
 
 func (c *Client) Read() {
-	// 用户读操作
-
-	defer func() {
+	defer func() { // 避免忘记关闭，所以要加上close
 		Manager.Unregister <- c
 		_ = c.Socket.Close()
 	}()
-
 	for {
-		c.Socket.PingHandler()
-		SendMsg := new(SendMsg)
-		//c.Socket.ReadMessage()
-		err := c.Socket.ReadJSON(&SendMsg)
+		c.Socket.PongHandler()
+		sendMsg := new(SendMsg)
+		// _,msg,_:=c.Socket.ReadMessage()
+		err := c.Socket.ReadJSON(&sendMsg) // 读取json格式，如果不是json格式，会报错
 		if err != nil {
-			fmt.Println("数组格式错误", err)
+			log.Println("数据格式不正确", err)
 			Manager.Unregister <- c
 			_ = c.Socket.Close()
 			break
 		}
-		if SendMsg.Type == 1 { // 发送消息
-			r1, _ := cache.RedisClient.Get(c.ID).Result() // 1 -> 2
-			r2, _ := cache.RedisClient.Get(c.ID).Result() // 2->1
-			if r1 > "3" && r2 == "" {                     // 1给2 发3条但2没有回 or 没有看到 就停止 1 发送
+		if sendMsg.Type == 1 {
+			r1, _ := cache.RedisClient.Get(c.ID).Result()
+			r2, _ := cache.RedisClient.Get(c.SendID).Result()
+			if r1 >= "3" && r2 == "" { // 限制单聊
 				replyMsg := ReplyMsg{
 					Code:    e.WebsocketLimit,
 					Content: "达到限制",
 				}
 				msg, _ := json.Marshal(replyMsg)
 				_ = c.Socket.WriteMessage(websocket.TextMessage, msg)
+				_, _ = cache.RedisClient.Expire(c.ID, time.Hour*24*30).Result() // 防止重复骚扰，未建立连接刷新过期时间一个月
 				continue
 			} else {
 				cache.RedisClient.Incr(c.ID)
-				_, _ = cache.RedisClient.Expire(c.ID, time.Hour*24*30*3).Result()
-				// 防止过快"分手"
+				_, _ = cache.RedisClient.Expire(c.ID, time.Hour*24*30*3).Result() // 防止过快“分手”，建立连接三个月过期
 			}
-			Manager.Boradcast <- &Boradcast{
+			log.Println(c.ID, "发送消息", sendMsg.Content)
+			Manager.Boradcast <- &Broadcast{
 				Client:  c,
-				Message: []byte(SendMsg.Content), // 发送过来的消息进行广播
-
+				Message: []byte(sendMsg.Content),
 			}
-
 		}
-
 	}
-
 }
 
 func (c *Client) Write() {
@@ -150,7 +145,7 @@ func (c *Client) Write() {
 				c.Socket.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
-			replyMsg := ReplyMsg{
+			replyMsg := &ReplyMsg{
 				Code:    e.WebsocketSuccess,
 				Content: fmt.Sprintf("%s", string(message)),
 			}
