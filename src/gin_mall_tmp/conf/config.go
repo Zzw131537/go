@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-04 17:57:51
+ * @LastEditTime: 2025-02-05 15:05:37
  */
 package conf
 
@@ -66,10 +66,10 @@ func LoadServer(file *ini.File) {
 
 func LoadMySql(file *ini.File) {
 	DB = file.Section("mysql").Key("DB").String()
-	DbHost = file.Section("mysql").Key("DbHost ").String()
+	DbHost = file.Section("mysql").Key("DbHost").String()
 	DbPort = file.Section("mysql").Key("DbPort").String()
 	DbUser = file.Section("mysql").Key("DbUser").String()
-	DbPassword = file.Section("mysql").Key("DbPassword ").String()
+	DbPassword = file.Section("mysql").Key("DbPassword").String()
 	DbName = file.Section("mysql").Key("DbName").String()
 }
 
