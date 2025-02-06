@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 15:08:31
+ * @LastEditTime: 2025-02-06 20:07:51
  */
 package serializer
 
@@ -13,5 +13,5 @@ type Response struct {
 
 type TokenData struct {
 	User  interface{} `json:"user"`
-	Token string      `json:"tokens"`
+	Token string      `json:"token"`
 }

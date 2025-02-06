@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 15:28:55
+ * @LastEditTime: 2025-02-06 21:07:06
  */
 package service
 
@@ -118,4 +118,38 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 		Data:   serializer.TokenData{User: serializer.BuildUser(user), Token: token},
 	}
 
+}
+
+// Update 用户修改信息
+func (service UserService) Update(ctx context.Context, uid uint) serializer.Response {
+	fmt.Println("进入service 的Updata函数")
+	fmt.Print("Uid 为:", uid)
+	var user *model.User
+	var err error
+	code := e.Success
+	// 找到这个用户
+	userDao := dao.NewUserDao(ctx)
+	user, err = userDao.GetUserById(uid)
+
+	// 修改昵称 nickName
+	if service.NickName != "" {
+		user.NickName = service.NickName
+	}
+
+	err = userDao.UpdateUserById(uid, user)
+
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	fmt.Println("code 为 ", code)
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildUser(user),
+	}
 }

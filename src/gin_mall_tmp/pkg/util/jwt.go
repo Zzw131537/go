@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 15:03:53
+ * @LastEditTime: 2025-02-06 20:22:23
  */
 package util
 
@@ -36,4 +36,17 @@ func GenerateToken(id uint, userName string, authority int) (string, error) {
 	token, err := tokenClaims.SignedString(jwtSecret)
 	return token, err
 
+}
+
+// 验证用户toekn
+func ParseToken(token string) (*Claims, error) {
+	tokenClaims, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+		return jwtSecret, nil
+	})
+	if tokenClaims != nil {
+		if claims, ok := tokenClaims.Claims.(*Claims); ok && tokenClaims.Valid {
+			return claims, nil
+		}
+	}
+	return nil, err
 }

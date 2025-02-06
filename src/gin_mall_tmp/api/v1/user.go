@@ -1,12 +1,15 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 15:18:54
+ * @LastEditTime: 2025-02-06 21:13:38
  */
 package v1
 
 import (
+	"fmt"
+	"mall/pkg/util"
 	"mall/service"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -24,6 +27,29 @@ func UserLogin(c *gin.Context) {
 	var userLogin service.UserService
 	if err := c.ShouldBind(&userLogin); err == nil {
 		res := userLogin.Login(c.Request.Context())
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, err)
+	}
+}
+
+func UserUpdate(c *gin.Context) {
+
+	var userUpdate service.UserService
+	token := c.GetHeader("Authorization")
+
+	if len(token) > 7 && strings.HasPrefix(strings.ToUpper(token), "BEARER ") {
+		token = token[7:]
+	}
+
+	claims, _ := util.ParseToken(token)
+
+	fmt.Println("进入api_Update函数")
+	if err := c.ShouldBind(&userUpdate); err == nil {
+		fmt.Println("进入CC")
+
+		res := userUpdate.Update(c.Request.Context(), claims.ID)
+
 		c.JSON(http.StatusOK, res)
 	} else {
 		c.JSON(http.StatusBadRequest, err)
