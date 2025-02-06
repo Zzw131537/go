@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-05 16:29:09
+ * @LastEditTime: 2025-02-06 14:50:34
  */
 package model
 
@@ -32,4 +32,9 @@ func (user *User) SetPassword(password string) error {
 	}
 	user.PasswordDigest = string(bytes)
 	return nil
+}
+
+func (user *User) CheckPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(user.PasswordDigest), []byte(password))
+	return err == nil
 }

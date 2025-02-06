@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-05 17:02:39
+ * @LastEditTime: 2025-02-06 15:19:54
  */
 package route
 
@@ -25,6 +25,7 @@ func NewRouter() *gin.Engine {
 		})
 		// 用户操作
 		v1.POST("user/register", api.UserRegister)
+		v1.POST("user/login", api.UserLogin)
 	}
 
 	return r

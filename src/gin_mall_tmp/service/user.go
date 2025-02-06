@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-05 16:53:09
+ * @LastEditTime: 2025-02-06 15:28:55
  */
 package service
 
@@ -58,7 +58,7 @@ func (service UserService) Register(ctx context.Context) serializer.Response {
 		UserName: service.UserName,
 		NickName: service.NickName,
 		Status:   model.Active,
-		Avatar:   "./static/imgs/avatar/avatar.JPG",
+		Avatar:   "avatar.JPG",
 		Money:    util.Encrypt.AesEncoding("10000"), // 初始金额的加密
 	}
 	// 密码加密
@@ -79,4 +79,43 @@ func (service UserService) Register(ctx context.Context) serializer.Response {
 		Status: code,
 		Msg:    e.GetMsg(code),
 	}
+}
+
+func (service *UserService) Login(ctx context.Context) serializer.Response {
+	var user *model.User
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, exist, err := userDao.ExistOrNotByUserName(service.UserName)
+
+	// 判断用户是否存在
+	if !exist || err != nil {
+		code = e.ErrorExistUserNotFound
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   "用户不存在，请先注册",
+		}
+	}
+	// 校验密码
+	if user.CheckPassword(service.PassWord) == false {
+		code = e.ErrorNotCompare
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Data:   "密码错误，请重新登录",
+		}
+	}
+
+	// http 无状态（认证，token)
+	// token 签发
+	token, err := util.GenerateToken(user.ID, service.UserName, 0)
+	if err != nil {
+		code = e.ErrorAuthToken
+	}
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.TokenData{User: serializer.BuildUser(user), Token: token},
+	}
+
 }
