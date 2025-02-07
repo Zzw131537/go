@@ -5,10 +5,14 @@ const (
 	Error         = 500
 	InvalidParams = 400
 
+	// user 错误
 	ErrorExistUser             = 30001
 	ErrorFailEncryption        = 30002
 	ErrorExistUserNotFound     = 30003
 	ErrorNotCompare            = 30004
 	ErrorAuthToken             = 30005
 	ErrorAuthCheckTokenTimeout = 30006
+	ErrorUpLoadFail            = 30007
+
+	// produce 模块错误 4xxxxx
 )

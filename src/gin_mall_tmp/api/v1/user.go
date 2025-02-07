@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 21:13:38
+ * @LastEditTime: 2025-02-07 18:25:19
  */
 package v1
 
@@ -49,6 +49,32 @@ func UserUpdate(c *gin.Context) {
 		fmt.Println("进入CC")
 
 		res := userUpdate.Update(c.Request.Context(), claims.ID)
+
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, err)
+	}
+}
+
+func UpLoadAvatar(c *gin.Context) {
+
+	file, fileHead, _ := c.Request.FormFile("file")
+
+	fileSize := fileHead.Size
+	fmt.Println("进入修改头像 - api", fileSize)
+	var upLoadAvatar service.UserService
+
+	token := c.GetHeader("Authorization")
+
+	if len(token) > 7 && strings.HasPrefix(strings.ToUpper(token), "BEARER ") {
+		token = token[7:]
+	}
+
+	claims, _ := util.ParseToken(token)
+
+	if err := c.ShouldBind(&upLoadAvatar); err == nil {
+
+		res := upLoadAvatar.Post(c.Request.Context(), claims.ID, file, fileSize)
 
 		c.JSON(http.StatusOK, res)
 	} else {

@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 16:10:06
+ * @LastEditTime: 2025-02-07 18:11:22
  */
 package e
 
@@ -15,6 +15,7 @@ var MsgFlags = map[int]string{
 	ErrorNotCompare:            "密码错误",
 	ErrorAuthToken:             "token验证失败",
 	ErrorAuthCheckTokenTimeout: "token过期",
+	ErrorUpLoadFail:            "图片上传失败",
 }
 
 // GetMsg 获取状态码对应的信息

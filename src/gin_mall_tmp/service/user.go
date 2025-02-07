@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 21:07:06
+ * @LastEditTime: 2025-02-07 18:14:14
  */
 package service
 
@@ -12,6 +12,7 @@ import (
 	"mall/pkg/e"
 	"mall/pkg/util"
 	"mall/serializer"
+	"mime/multipart"
 )
 
 type UserService struct {
@@ -147,6 +148,51 @@ func (service UserService) Update(ctx context.Context, uid uint) serializer.Resp
 		}
 	}
 	fmt.Println("code 为 ", code)
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildUser(user),
+	}
+}
+
+// 头像更新
+func (service *UserService) Post(ctx context.Context, uId uint, file multipart.File, fileSize int64) serializer.Response {
+	code := e.Success
+	var user *model.User
+	var err error
+	userDao := dao.NewUserDao(ctx)
+	user, err = userDao.GetUserById(uId)
+
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+
+	// 保持图片到本地
+	path, err := UpLoadAvatarToLocalStatic(file, uId, user.UserName)
+
+	if err != nil {
+		code = e.ErrorUpLoadFail
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	user.Avatar = path
+	err = userDao.UpdateUserById(uId, user)
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
 	return serializer.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
