@@ -13,6 +13,6 @@ const (
 	ErrorAuthToken             = 30005
 	ErrorAuthCheckTokenTimeout = 30006
 	ErrorUpLoadFail            = 30007
-
+	ErrorSendEmail             = 30008
 	// produce 模块错误 4xxxxx
 )

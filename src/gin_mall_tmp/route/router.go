@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-07 18:15:37
+ * @LastEditTime: 2025-02-07 18:41:33
  */
 package route
 
@@ -33,6 +33,10 @@ func NewRouter() *gin.Engine {
 			// 用户操作
 			authed.PUT("user", api.UserUpdate)
 			authed.POST("avatar", api.UpLoadAvatar)
+
+			// 更新密码需要邮箱验证
+
+			authed.POST("user/sending-email", api.SendEmail)
 		}
 	}
 
