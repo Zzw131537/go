@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-07 18:41:33
+ * @LastEditTime: 2025-02-09 16:14:14
  */
 package route
 
@@ -37,6 +37,8 @@ func NewRouter() *gin.Engine {
 			// 更新密码需要邮箱验证
 
 			authed.POST("user/sending-email", api.SendEmail)
+
+			authed.POST("user/valid-email", api.ValidEmail)
 		}
 	}
 

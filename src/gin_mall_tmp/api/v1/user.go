@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-07 19:30:19
+ * @LastEditTime: 2025-02-09 16:04:02
  */
 package v1
 
@@ -94,6 +94,26 @@ func SendEmail(c *gin.Context) {
 	if err := c.ShouldBind(&sendEmail); err == nil {
 
 		res := sendEmail.Send(c.Request.Context(), claims.ID)
+
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+}
+
+func ValidEmail(c *gin.Context) {
+	var validEmail service.ValidEmailService
+
+	token := c.GetHeader("Authorization")
+
+	if len(token) > 7 && strings.HasPrefix(strings.ToUpper(token), "BEARER ") {
+		token = token[7:]
+	}
+
+	if err := c.ShouldBind(&validEmail); err == nil {
+
+		res := validEmail.Valid(c.Request.Context(), token)
 
 		c.JSON(http.StatusOK, res)
 	} else {
