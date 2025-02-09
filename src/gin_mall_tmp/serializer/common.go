@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-06 20:07:51
+ * @LastEditTime: 2025-02-09 17:02:56
  */
 package serializer
 
@@ -14,4 +14,20 @@ type Response struct {
 type TokenData struct {
 	User  interface{} `json:"user"`
 	Token string      `json:"token"`
+}
+
+type DataList struct {
+	Item  interface{} `json:"item"`
+	Total uint        `json:"total"`
+}
+
+func BuildListResponse(item interface{}, total uint) Response {
+	return Response{
+		Status: 200,
+		Data: DataList{
+			Item:  item,
+			Total: total,
+		},
+		Msg: "ok",
+	}
 }

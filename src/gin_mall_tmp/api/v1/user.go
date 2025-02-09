@@ -1,11 +1,10 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 16:18:39
+ * @LastEditTime: 2025-02-09 16:35:37
  */
 package v1
 
 import (
-	"fmt"
 	"mall/pkg/util"
 	"mall/service"
 	"net/http"
@@ -44,9 +43,7 @@ func UserUpdate(c *gin.Context) {
 
 	claims, _ := util.ParseToken(token)
 
-	fmt.Println("进入api_Update函数")
 	if err := c.ShouldBind(&userUpdate); err == nil {
-		fmt.Println("进入CC")
 
 		res := userUpdate.Update(c.Request.Context(), claims.ID)
 

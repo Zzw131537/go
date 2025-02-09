@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 16:16:03
+ * @LastEditTime: 2025-02-09 17:15:57
  */
 package route
 
@@ -26,6 +26,9 @@ func NewRouter() *gin.Engine {
 		// 用户操作
 		v1.POST("user/register", api.UserRegister)
 		v1.POST("user/login", api.UserLogin)
+
+		// 轮播图
+		v1.GET("carousels", api.ListCarousel)
 
 		authed := v1.Group("/") // 需要登录保护
 		authed.Use(middleware.JWT())
