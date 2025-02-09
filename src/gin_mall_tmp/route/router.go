@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 16:14:14
+ * @LastEditTime: 2025-02-09 16:16:03
  */
 package route
 
@@ -39,6 +39,9 @@ func NewRouter() *gin.Engine {
 			authed.POST("user/sending-email", api.SendEmail)
 
 			authed.POST("user/valid-email", api.ValidEmail)
+
+			// 显示金娥
+			authed.POST("money", api.ShowMoney)
 		}
 	}
 

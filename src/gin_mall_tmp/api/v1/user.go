@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 16:04:02
+ * @LastEditTime: 2025-02-09 16:18:39
  */
 package v1
 
@@ -114,6 +114,28 @@ func ValidEmail(c *gin.Context) {
 	if err := c.ShouldBind(&validEmail); err == nil {
 
 		res := validEmail.Valid(c.Request.Context(), token)
+
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, err)
+	}
+
+}
+
+func ShowMoney(c *gin.Context) {
+	var showMoney service.ShowMoneyService
+
+	token := c.GetHeader("Authorization")
+
+	if len(token) > 7 && strings.HasPrefix(strings.ToUpper(token), "BEARER ") {
+		token = token[7:]
+	}
+
+	claims, _ := util.ParseToken(token)
+
+	if err := c.ShouldBind(&showMoney); err == nil {
+
+		res := showMoney.Show(c.Request.Context(), claims.ID)
 
 		c.JSON(http.StatusOK, res)
 	} else {

@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 16:12:41
+ * @LastEditTime: 2025-02-09 16:21:56
  */
 package service
 
@@ -35,6 +35,10 @@ type SendEmailService struct {
 }
 
 type ValidEmailService struct {
+}
+
+type ShowMoneyService struct {
+	Key string `json:"key" form:"key"`
 }
 
 func (service UserService) Register(ctx context.Context) serializer.Response {
@@ -340,5 +344,25 @@ func (service *ValidEmailService) Valid(ctx context.Context, token string) seria
 		Status: code,
 		Msg:    e.GetMsg(code),
 		Data:   serializer.BuildUser(user),
+	}
+}
+
+// 展示用户金额
+func (service *ShowMoneyService) Show(ctx context.Context, uId uint) serializer.Response {
+	code := e.Success
+	userDao := dao.NewUserDao(ctx)
+	user, err := userDao.GetUserById(uId)
+
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+		}
+	}
+	return serializer.Response{
+		Status: code,
+		Data:   serializer.BuildMoney(user, service.Key),
+		Msg:    e.GetMsg(code),
 	}
 }
