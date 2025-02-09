@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-07 18:08:19
+ * @LastEditTime: 2025-02-09 18:14:41
  */
 package service
 
@@ -46,4 +46,22 @@ func CreateDir(dirName string) bool {
 		return false
 	}
 	return true
+}
+
+func UpLoadproductToLocalStatic(file multipart.File, userId uint, productName string) (filePath string, err error) {
+	bId := strconv.Itoa(int(userId))
+	basePath := "." + conf.ProductPath + "boss" + bId + "/"
+	if !DirExistOrNot(basePath) {
+		CreateDir(basePath)
+	}
+	productPath := basePath + productName + ".jpg"
+	content, err := io.ReadAll(file)
+	if err != nil {
+		return "", err
+	}
+	err = os.WriteFile(productPath, content, 0666)
+	if err != nil {
+		return
+	}
+	return "boss" + bId + "/" + productName + ".jpg", nil
 }

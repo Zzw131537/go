@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 16:35:37
+ * @LastEditTime: 2025-02-09 18:08:28
  */
 package v1
 
@@ -19,7 +19,9 @@ func UserRegister(c *gin.Context) {
 		res := userService.Register(c.Request.Context())
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+
 	}
 }
 func UserLogin(c *gin.Context) {
@@ -28,7 +30,8 @@ func UserLogin(c *gin.Context) {
 		res := userLogin.Login(c.Request.Context())
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 }
 
@@ -49,7 +52,8 @@ func UserUpdate(c *gin.Context) {
 
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 }
 
@@ -74,7 +78,8 @@ func UpLoadAvatar(c *gin.Context) {
 
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 }
 
@@ -94,7 +99,8 @@ func SendEmail(c *gin.Context) {
 
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 
 }
@@ -114,7 +120,8 @@ func ValidEmail(c *gin.Context) {
 
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 
 }
@@ -136,7 +143,8 @@ func ShowMoney(c *gin.Context) {
 
 		c.JSON(http.StatusOK, res)
 	} else {
-		c.JSON(http.StatusBadRequest, err)
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
 	}
 
 }

@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 17:15:57
+ * @LastEditTime: 2025-02-09 17:47:12
  */
 package route
 
@@ -45,6 +45,9 @@ func NewRouter() *gin.Engine {
 
 			// 显示金娥
 			authed.POST("money", api.ShowMoney)
+
+			// 商品操作
+			authed.POST("product", api.CreateProduct)
 		}
 	}
 
