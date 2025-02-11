@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 18:16:31
+ * @LastEditTime: 2025-02-11 19:39:34
  */
 package service
 
@@ -11,6 +11,8 @@ import (
 	"mall/pkg/e"
 	"mall/serializer"
 	"mime/multipart"
+	"strconv"
+	"sync"
 )
 
 type ProductService struct {
@@ -38,4 +40,79 @@ func (service *ProductService) Create(ctx context.Context, uId uint, files []*mu
 	// 以第一·张作为封面图
 	tmp, _ := files[0].Open()
 	path, err := UpLoadproductToLocalStatic(tmp, uId, service.Name)
+	if err != nil {
+		code = e.ErrorProductImgUpload
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	product := model.Product{
+		Name:          service.Name,
+		CategoryId:    service.CategoryId,
+		Tiitle:        service.Title,
+		Info:          service.Info,
+		ImgPath:       path,
+		Price:         service.Price,
+		DiscountPrice: service.DiscountPrice,
+		OnSale:        true,
+		Num:           service.Num,
+		BossId:        uId,
+		BossName:      boss.UserName,
+		BossAvatar:    boss.Avatar,
+	}
+
+	productDao := dao.NewProductDao(ctx)
+
+	err = productDao.CreateProduct(&product)
+
+	if err != nil {
+		code = e.Error
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+
+	wg := new(sync.WaitGroup)
+	wg.Add(len(files))
+	for index, file := range files {
+		num := strconv.Itoa(index)
+		productImgDao := dao.NewProductImgDaoByDB(productDao.DB)
+
+		tmp, _ = file.Open()
+		path, err = UpLoadproductToLocalStatic(tmp, uId, service.Name+num)
+
+		if err != nil {
+			code = e.ErrorProductImgUpload
+			return serializer.Response{
+				Status: code,
+				Msg:    e.GetMsg(code),
+				Error:  err.Error(),
+			}
+		}
+		productImg := model.ProductImg{
+			ProductId: product.ID,
+			ImgPath:   path,
+		}
+		err = productImgDao.CreateProductImg(&productImg)
+		if err != nil {
+			code = e.Error
+			return serializer.Response{
+				Status: code,
+				Msg:    e.GetMsg(code),
+				Error:  err.Error(),
+			}
+		}
+		wg.Done()
+	}
+	wg.Wait()
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildProduct(&product),
+	}
+
 }

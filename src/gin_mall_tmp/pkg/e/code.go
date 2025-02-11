@@ -15,4 +15,5 @@ const (
 	ErrorUpLoadFail            = 30007
 	ErrorSendEmail             = 30008
 	// produce 模块错误 4xxxxx
+	ErrorProductImgUpload = 40001
 )
