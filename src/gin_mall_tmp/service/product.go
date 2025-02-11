@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:22:18
+ * @LastEditTime: 2025-02-11 20:50:11
  */
 package service
 
@@ -151,4 +151,23 @@ func (service *ProductService) List(ctx context.Context) serializer.Response {
 	wg.Wait()
 
 	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(total))
+}
+
+func (service *ProductService) Search(ctx context.Context) serializer.Response {
+	code := e.Success
+	if service.PageSize == 0 {
+		service.PageSize = 15
+	}
+	productDao := dao.NewProductDao(ctx)
+	products, err := productDao.SearchProduct(service.Info, service.BasePage)
+	if err != nil {
+		code = e.Error
+		util.LogrusObj.Infoln(err)
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(len(products)))
 }

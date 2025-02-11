@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:27:23
+ * @LastEditTime: 2025-02-11 20:51:05
  */
 package dao
 
@@ -34,5 +34,14 @@ func (dao *ProductDao) CountProductByConfition(condition map[string]interface{})
 
 func (dao *ProductDao) ListProductByCondition(condition map[string]interface{}, page model.BasePage) (products []*model.Product, err error) {
 	err = dao.DB.Where(condition).Offset((page.PageNum - 1) * (page.PageSize)).Limit(page.PageSize).Find(&products).Error
+	return
+}
+
+func (dao *ProductDao) SearchProduct(info string, page model.BasePage) (products []*model.Product, err error) {
+
+	err = dao.DB.Model(&model.Product{}).
+		Where("name LIKE ? OR info LIKE ?", "%"+info+"%", "%"+info+"%").
+		Offset((page.PageNum - 1) * page.PageSize).
+		Limit(page.PageSize).Find(&products).Error
 	return
 }
