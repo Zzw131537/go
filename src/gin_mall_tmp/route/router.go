@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:47:13
+ * @LastEditTime: 2025-02-11 20:54:38
  */
 package route
 
@@ -32,6 +32,8 @@ func NewRouter() *gin.Engine {
 
 		// 商品操作
 		v1.GET("products", api.ListProduct)
+		v1.GET("product/:id", api.ShowProduct)
+
 		authed := v1.Group("/") // 需要登录保护
 
 		authed.Use(middleware.JWT())

@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:50:11
+ * @LastEditTime: 2025-02-11 21:02:16
  */
 package service
 
@@ -170,4 +170,26 @@ func (service *ProductService) Search(ctx context.Context) serializer.Response {
 		}
 	}
 	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(len(products)))
+}
+
+func (service *ProductService) Show(ctx context.Context, id string) serializer.Response {
+	code := e.Success
+	pId, _ := strconv.Atoi(id)
+	productDao := dao.NewProductDao(ctx)
+	product, err := productDao.GetProductById(uint(pId))
+	if err != nil {
+		code = e.Error
+		util.LogrusObj.Infoln(err)
+		return serializer.Response{
+			Status: code,
+			Msg:    e.GetMsg(code),
+			Error:  err.Error(),
+		}
+	}
+
+	return serializer.Response{
+		Status: code,
+		Msg:    e.GetMsg(code),
+		Data:   serializer.BuildProduct(product),
+	}
 }

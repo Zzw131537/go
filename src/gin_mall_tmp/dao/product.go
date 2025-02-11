@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:51:05
+ * @LastEditTime: 2025-02-11 20:59:31
  */
 package dao
 
@@ -43,5 +43,10 @@ func (dao *ProductDao) SearchProduct(info string, page model.BasePage) (products
 		Where("name LIKE ? OR info LIKE ?", "%"+info+"%", "%"+info+"%").
 		Offset((page.PageNum - 1) * page.PageSize).
 		Limit(page.PageSize).Find(&products).Error
+	return
+}
+
+func (dao *ProductDao) GetProductById(id uint) (product *model.Product, err error) {
+	err = dao.DB.Model(&model.Product{}).Where("id = ?", id).First(&product).Error
 	return
 }

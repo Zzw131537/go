@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:37:03
+ * @LastEditTime: 2025-02-11 20:55:12
  */
 package v1
 
@@ -51,16 +51,20 @@ func ListProduct(c *gin.Context) {
 func SearchProduct(c *gin.Context) {
 	searchProductService := service.ProductService{}
 
-	// token := c.GetHeader("Authorization")
-
-	// if len(token) > 7 && strings.HasPrefix(strings.ToUpper(token), "BEARER ") {
-	// 	token = token[7:]
-	// }
-
-	// claims, _ := util.ParseToken(token)
-
 	if err := c.ShouldBind(&searchProductService); err == nil {
 		res := searchProductService.Search(c.Request.Context())
+		c.JSON(http.StatusOK, res)
+	} else {
+		c.JSON(http.StatusBadRequest, ErrorResponse(err))
+		util.LogrusObj.Info(err)
+	}
+}
+
+func ShowProduct(c *gin.Context) {
+	showProductService := service.ProductService{}
+
+	if err := c.ShouldBind(&showProductService); err == nil {
+		res := showProductService.Show(c.Request.Context(), c.Param("id"))
 		c.JSON(http.StatusOK, res)
 	} else {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err))
