@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 19:42:00
+ * @LastEditTime: 2025-02-11 20:18:40
  */
 package serializer
 
@@ -45,4 +45,13 @@ func BuildProduct(item *model.Product) Product {
 		BossName:      item.BossName,
 		BossAvatar:    conf.Host + conf.HttpPort + conf.AvatarPath + item.BossAvatar,
 	}
+}
+
+func BuildProducts(items []*model.Product) (products []Product) {
+	for _, item := range items {
+		product := BuildProduct(item)
+		products = append(products, product)
+	}
+	return
+
 }

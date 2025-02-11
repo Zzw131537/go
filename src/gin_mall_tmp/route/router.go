@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-09 17:47:12
+ * @LastEditTime: 2025-02-11 20:22:40
  */
 package route
 
@@ -30,6 +30,8 @@ func NewRouter() *gin.Engine {
 		// 轮播图
 		v1.GET("carousels", api.ListCarousel)
 
+		// 商品操作
+		v1.GET("products", api.ListProduct)
 		authed := v1.Group("/") // 需要登录保护
 		authed.Use(middleware.JWT())
 		{
