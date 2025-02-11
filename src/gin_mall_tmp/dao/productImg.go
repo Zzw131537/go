@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 19:01:46
+ * @LastEditTime: 2025-02-11 21:14:23
  */
 package dao
 
@@ -25,4 +25,9 @@ func NewProductImgDaoByDB(da *gorm.DB) *ProductImgDao {
 
 func (dao *ProductImgDao) CreateProductImg(productImg *model.ProductImg) (err error) {
 	return dao.DB.Model(&model.ProductImg{}).Create(&productImg).Error
+}
+
+func (dao *ProductImgDao) ListProductImg(id uint) (productImg []*model.ProductImg, err error) {
+	err = dao.DB.Model(&model.ProductImg{}).Where("product_id = ?", id).Find(&productImg).Error
+	return
 }
