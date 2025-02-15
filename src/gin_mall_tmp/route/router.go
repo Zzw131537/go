@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 21:26:46
+ * @LastEditTime: 2025-02-15 16:12:34
  */
 package route
 
@@ -56,6 +56,11 @@ func NewRouter() *gin.Engine {
 			authed.POST("product", api.CreateProduct)
 
 			authed.POST("search_proudcts", api.SearchProduct)
+
+			// 编写收藏夹操作
+			authed.GET("favorites", api.ListFavorite)
+			authed.POST("favorites", api.CreateFavorite)
+			authed.DELETE("favorite/:id", api.DeleteFavorite)
 		}
 	}
 

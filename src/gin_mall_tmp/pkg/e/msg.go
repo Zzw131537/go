@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 18:43:31
+ * @LastEditTime: 2025-02-15 16:54:33
  */
 package e
 
@@ -18,6 +18,7 @@ var MsgFlags = map[int]string{
 	ErrorUpLoadFail:            "图片上传失败",
 	ErrorSendEmail:             "邮件发送失败",
 	ErrorProductImgUpload:      "图片上传错误",
+	ErrorFavoriteExist:         "搜藏夹已经存在",
 }
 
 // GetMsg 获取状态码对应的信息

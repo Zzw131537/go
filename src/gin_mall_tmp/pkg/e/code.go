@@ -1,3 +1,7 @@
+/*
+ * @Author: Zhouzw
+ * @LastEditTime: 2025-02-15 16:53:59
+ */
 package e
 
 const (
@@ -16,4 +20,7 @@ const (
 	ErrorSendEmail             = 30008
 	// produce 模块错误 4xxxxx
 	ErrorProductImgUpload = 40001
+
+	// 收藏夹错误
+	ErrorFavoriteExist = 50001
 )
