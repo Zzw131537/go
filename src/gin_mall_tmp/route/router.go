@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-15 16:12:34
+ * @LastEditTime: 2025-02-16 16:08:43
  */
 package route
 
@@ -61,6 +61,12 @@ func NewRouter() *gin.Engine {
 			authed.GET("favorites", api.ListFavorite)
 			authed.POST("favorites", api.CreateFavorite)
 			authed.DELETE("favorite/:id", api.DeleteFavorite)
+
+			authed.POST("address", api.CreateAddress)
+			authed.GET("address/:id", api.ShowAddress)
+			authed.GET("listaddress", api.ListAddress)
+			authed.PUT("address/:id", api.UpdateAddress)
+			authed.DELETE("address/:id", api.DeleteAddress)
 		}
 	}
 
