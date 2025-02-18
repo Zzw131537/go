@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-04 18:08:44
+ * @LastEditTime: 2025-02-16 16:30:49
  */
 package model
 
@@ -11,7 +11,7 @@ type Cart struct {
 	UserId    uint `gorm:"not null"`
 	ProductId uint `gorm:"not null"`
 	BossId    uint `gorm:"not null"`
-	Num       uint `gorm:"not null"`
-	MaxNum    uint `gorm:"not null"`
-	Check     bool `gorm:"not null"`
+	Num       uint
+	MaxNum    uint
+	Check     bool
 }
