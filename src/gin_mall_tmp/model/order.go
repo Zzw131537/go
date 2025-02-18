@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-05 14:53:16
+ * @LastEditTime: 2025-02-18 20:18:48
  */
 package model
 
@@ -11,8 +11,8 @@ type Order struct {
 
 	UserId    uint `gorm:"not null"`
 	ProductId uint `gorm:"not null"`
-	BissId    uint `gorm:"not null"`
-	AddressId uint `gorm:"not null"`
+	BossId    uint
+	AddressId uint
 	Num       int
 	OrderNum  int64
 	Type      int // 1 未支付 2 已支付

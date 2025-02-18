@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-16 16:11:38
+ * @LastEditTime: 2025-02-18 19:57:14
  */
 package dao
 
@@ -33,7 +33,7 @@ func (dao *AddressDao) GetAddressByaId(aId uint) (address *model.Address, err er
 }
 
 func (dao *AddressDao) ListAddressByuId(uId uint) (addresses []*model.Address, err error) {
-	err = dao.DB.Model(&model.Address{}).Where("user_id = ?", uId).Find(addresses).Error
+	err = dao.DB.Model(&model.Address{}).Where("user_id = ?", uId).Find(&addresses).Error
 	return
 }
 

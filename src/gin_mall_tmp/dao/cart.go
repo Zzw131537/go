@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-16 17:03:15
+ * @LastEditTime: 2025-02-18 19:56:46
  */
 package dao
 
@@ -33,7 +33,7 @@ func (dao *CartDao) GetCartByaId(aId uint) (cart *model.Cart, err error) {
 }
 
 func (dao *CartDao) ListCartByuId(uId uint) (cartes []*model.Cart, err error) {
-	err = dao.DB.Model(&model.Cart{}).Where("user_id = ?", uId).Find(cartes).Error
+	err = dao.DB.Model(&model.Cart{}).Where("user_id = ?", uId).Find(&cartes).Error
 	return
 }
 

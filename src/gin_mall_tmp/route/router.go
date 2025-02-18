@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-18 18:23:14
+ * @LastEditTime: 2025-02-18 20:26:15
  */
 package route
 
@@ -75,6 +75,11 @@ func NewRouter() *gin.Engine {
 			authed.PUT("carts/:id", api.UpdateCart)
 			authed.DELETE("carts/:id", api.DeleteCart)
 
+			// 订单·操作
+			authed.POST("orders", api.CreateOrder)
+			authed.GET("listorders", api.ListOrder)
+			authed.GET("orders/:id", api.ShowOrder)
+			authed.DELETE("orders/:id", api.DeleteOrder)
 		}
 	}
 
