@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-18 20:33:26
+ * @LastEditTime: 2025-02-18 21:45:11
  */
 package dao
 
@@ -37,6 +37,6 @@ func (dao *OrderDao) ListOrderByCondition(t, uId uint, page model.BasePage) (ord
 	return
 }
 
-func (dao *OrderDao) DeleteOrder(uId, cId uint) error {
-	return dao.DB.Model(&model.Order{}).Where("id=? AND user_id = ? ", cId, uId).Delete(&model.Order{}).Error
+func (dao *OrderDao) DeleteOrder(uId, oId uint) error {
+	return dao.DB.Model(&model.Order{}).Where("id=? AND user_id = ? ", oId, uId).Delete(&model.Order{}).Error
 }

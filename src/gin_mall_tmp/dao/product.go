@@ -1,6 +1,6 @@
 /*
  * @Author: Zhouzw
- * @LastEditTime: 2025-02-11 20:59:31
+ * @LastEditTime: 2025-02-18 21:41:39
  */
 package dao
 
@@ -49,4 +49,8 @@ func (dao *ProductDao) SearchProduct(info string, page model.BasePage) (products
 func (dao *ProductDao) GetProductById(id uint) (product *model.Product, err error) {
 	err = dao.DB.Model(&model.Product{}).Where("id = ?", id).First(&product).Error
 	return
+}
+
+func (dao *ProductDao) UpdateProduct(pId uint, product *model.Product) error {
+	return dao.DB.Model(&model.Product{}).Where("id = ?", pId).Updates(&product).Error
 }
