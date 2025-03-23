@@ -1,0 +1,6 @@
+protobuf 即 Protocol Buffers，是一种轻便高效的结构化数据存储格式，
+与语言、平台无关，可扩展可序列化。protobuf 性能和效率大幅度优于 JSON、XML 等其他的结构化数据格式。
+
+我们需要在 Golang 中使用 protobuf，还需要安装 protoc-gen-go，这个工具用来将 .proto 文件转换为 Golang 代码。
+
+go get -u github.com/golang/protobuf/protoc-gen-go
