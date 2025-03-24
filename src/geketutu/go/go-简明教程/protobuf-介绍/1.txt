@@ -4,3 +4,13 @@ protobuf 即 Protocol Buffers，是一种轻便高效的结构化数据存储格
 我们需要在 Golang 中使用 protobuf，还需要安装 protoc-gen-go，这个工具用来将 .proto 文件转换为 Golang 代码。
 
 go get -u github.com/golang/protobuf/protoc-gen-go
+
+
+protoc --go_out=. *.proto
+
+syntax = "proto3";
+
+// 添加以下行，指定 Go 包的导入路径和包名
+option go_package = ".;main"; // 格式：<导入路径>;<包名>
+// 或者更规范的写法（假设你的模块路径是 "github.com/yourname/project"）
+// option go_package = "github.com/yourname/project/pb;pb";

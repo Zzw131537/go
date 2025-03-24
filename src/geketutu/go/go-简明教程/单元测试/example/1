@@ -1,0 +1,37 @@
+   // 判断输入的年份是平年还是闰年,来判断当输入2月时天数是否有误
+                if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {// 该年是闰年,2月有29天
+                    if (month == 2) {
+                        if (day > 29) {
+                            System.out.println("抱歉," + year + "是闰年,2月只有29天!");
+                            continue;
+                        } else if (day < 1) {
+                            System.out.println("抱歉,您输入的日期有误!");
+                            continue;
+                        } else {
+                            if (day == 29) {
+                                System.out.println("NextDay:" + year + "-" + 3 + "-" + 1);
+                                continue;
+                            } else {
+                                day += 1;
+                            }
+                        }
+
+                    }
+                } else {// 该年是平年,2月有28天
+                    if (month == 2) {
+                        if (day > 28) {
+                            System.out.println("抱歉,今年是闰年,2月只有28天!");
+                            continue;
+                        } else if (day < 1) {
+                            System.out.println("抱歉,您输入的日期有误!");
+                            continue;
+                        } else {
+                            if (day == 28) {
+                                System.out.println("NextDay:" + year + "-" + 3 + "-" + 1);
+                                continue;
+                            } else {
+                                day += 1;
+                            }
+                        }
+                    }
+                }
