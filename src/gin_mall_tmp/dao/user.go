@@ -27,7 +27,6 @@ func (dao *UserDao) ExistOrNotByUserName(userName string) (user *model.User, exi
 		return nil, false, err
 	}
 	return user, true, nil
-
 }
 
 // 创建用户
