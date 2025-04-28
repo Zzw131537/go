@@ -1,9 +1,12 @@
 package dao
 
 import (
+	"HiChat/common"
 	"HiChat/global"
 	"HiChat/models"
 	"errors"
+	"strconv"
+	"time"
 
 	"go.uber.org/zap"
 )
@@ -26,12 +29,12 @@ func FindUserByNameAndPwd(name string, password string) (*models.UserBasic, erro
 	}
 
 	// 登录识别
-	// t := strconv.Itoa(int(time.Now().Unix()))
+	t := strconv.Itoa(int(time.Now().Unix()))
 
-	// temp := common.Md5encoder(t)
-	// if tx := global.DB.Model(&user).Where("id = ?", user.ID).Update("identity", temp); tx.RowsAffected == 0 {
-	// 	return nil, errors.New("写入identity失败")
-	// }
+	temp := common.Md5encoder(t)
+	if tx := global.DB.Model(&user).Where("id = ?", user.ID).Update("identity", temp); tx.RowsAffected == 0 {
+		return nil, errors.New("写入identity失败")
+	}
 
 	return &user, nil
 }
