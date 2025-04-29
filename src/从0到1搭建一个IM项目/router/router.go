@@ -27,8 +27,14 @@ func Router() *gin.Engine {
 
 	relation := v1.Group("relation").Use(middlewear.JWY())
 	{
+		// 好友api
 		relation.POST("/list", service.FriendList)
 		relation.POST("/add", service.AddFriendByName)
+
+		// 群api
+		relation.POST("/new_group", service.NewGroup)
+		relation.POST("/group_list", service.GetGroupList)
+		relation.POST("/join_group", service.JoinGroup)
 	}
 
 	return router
