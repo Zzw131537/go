@@ -1,6 +1,8 @@
 package models
 
 import (
+	"HiChat/global"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -8,6 +10,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 	"go.uber.org/zap"
 	"gopkg.in/fatih/set.v0"
@@ -229,29 +232,110 @@ func dispatch(data []byte) {
 	// 判断消息类型
 	switch msg.Type {
 	case 1: // 私聊
-		sendMsg(msg.TargetId, data)
+		// sendMsg(msg.TargetId, data)
+
+		sendMsgAndSave(msg.TargetId, data)
 	case 2: // 群发
 		sendGroupMsg(uint(msg.FormId), uint(msg.TargetId), data)
 	}
 }
 
 // sendMsg 向用户单聊发送消息
-func sendMsg(id int64, msg []byte) {
-	rwLocker.Lock()
-	node, ok := clientMap[id]
-	rwLocker.Unlock()
+// func sendMsg(id int64, msg []byte) {
+// 	rwLocker.Lock()
+// 	node, ok := clientMap[id]
+// 	rwLocker.Unlock()
 
-	if !ok {
-		zap.S().Info("userId 没有对应的node")
-		return
-	}
-	zap.S().Info("targetId: ", id, "node: ", node)
-	if ok {
-		node.DataQueue <- msg
-	}
-}
+// 	if !ok {
+// 		zap.S().Info("userId 没有对应的node")
+// 		return
+// 	}
+// 	zap.S().Info("targetId: ", id, "node: ", node)
+// 	if ok {
+// 		node.DataQueue <- msg
+// 	}
+// }
 
 // sendGroupMsg 群发逻辑
 func sendGroupMsg(formId, target uint, data []byte) (int, error) {
+	// 逻辑，获取群里所有用户，然后向除开自己的每一位用户发送消息
+	userIds, err := FindUsers(target)
+	if err != nil {
+		return -1, err
+	}
+	for _, userId := range *userIds {
+		if formId != userId {
+			sendMsgAndSave(int64(userId), data)
+		}
+	}
+	return 0, nil
+}
 
+// sendMsgTest 发送消息，并存储聊天记录到redis
+func sendMsgAndSave(userId int64, msg []byte) {
+	rwLocker.RLock()
+	node, ok := clientMap[userId]
+	rwLocker.RUnlock()
+
+	jsonMsg := Message{}
+	json.Unmarshal(msg, &jsonMsg)
+	ctx := context.Background()
+	targetIdStr := strconv.Itoa(int(userId))
+	userIdStr := strconv.Itoa(int(jsonMsg.FormId))
+
+	if ok {
+		node.DataQueue <- msg
+	}
+
+	// userIdStr 和targetStr 进行拼接唯一key
+	var key string
+	if userId > jsonMsg.FormId {
+		key = "msg_" + userIdStr + "_" + targetIdStr
+	} else {
+		key = "msg_" + targetIdStr + "_" + userIdStr
+	}
+
+	// 创建记录
+	res, err := global.RedisDB.ZRevRange(ctx, key, 0, -1).Result()
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	// 将聊天记录写入redis中
+	score := float64(cap(res)) + 1
+	ress, e := global.RedisDB.ZAdd(ctx, key, &redis.Z{score, msg}).Result()
+	if e != nil {
+		fmt.Println(e.Error())
+		return
+	}
+	fmt.Println(ress)
+}
+
+// RedisMsg 获取缓存里面的聊天记录
+func RedisMsg(userIdA int64, userIdB int64, start int64, end int64, isRev bool) []string {
+	ctx := context.Background()
+	userIdStr := strconv.Itoa(int(userIdA))
+	targetIdStr := strconv.Itoa(int(userIdB))
+
+	// 拼接key
+	var key string
+	if userIdA > userIdB {
+		key = "msg_" + targetIdStr + "_" + userIdStr
+	} else {
+		key = "msg_" + userIdStr + "_" + targetIdStr
+	}
+
+	var rels []string
+	var err error
+	if isRev {
+		rels, err = global.RedisDB.ZRange(ctx, key, start, end).Result()
+	} else {
+		rels, err = global.RedisDB.ZRevRange(ctx, key, start, end).Result()
+	}
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return rels
 }

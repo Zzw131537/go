@@ -3,6 +3,7 @@ package service
 import (
 	"HiChat/common"
 	"HiChat/dao"
+	"HiChat/models"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -94,4 +95,14 @@ func HandleErr(code int, ctx *gin.Context, err error) {
 			"message": "不能添加自己",
 		})
 	}
+}
+
+func RedisMsg(c *gin.Context) {
+	userIdA, _ := strconv.Atoi(c.PostForm("userIdA"))
+	userIdB, _ := strconv.Atoi(c.PostForm("userIdB"))
+	start, _ := strconv.Atoi(c.PostForm("start"))
+	end, _ := strconv.Atoi(c.PostForm("end"))
+	isRev, _ := strconv.ParseBool(c.PostForm("isRev"))
+	res := models.RedisMsg(int64(userIdA), int64(userIdB), int64(start), int64(end), isRev)
+	common.RespOKList(c.Writer, "ok", res)
 }

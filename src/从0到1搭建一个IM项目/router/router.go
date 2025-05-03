@@ -23,6 +23,7 @@ func Router() *gin.Engine {
 		user.DELETE("/delete", middlewear.JWY(), service.DeleteUser)
 		user.POST("/updata", middlewear.JWY(), service.UpdataUser)
 		user.GET("/SendUserMsg", middlewear.JWY(), service.SendUserMsg)
+		user.POST("/redisMsg", service.RedisMsg).Use(middlewear.JWY())
 	}
 
 	relation := v1.Group("relation").Use(middlewear.JWY())
