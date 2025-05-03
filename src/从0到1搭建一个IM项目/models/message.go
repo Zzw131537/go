@@ -3,6 +3,7 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"strconv"
 	"sync"
@@ -102,34 +103,155 @@ func sendProc(node *Node) {
 	}
 }
 
-// recProc 从websocket中将消息拿出，然后解析，再进行消息类型判读，最后将消息发送到目的用户的node 中
+// // recProc 从websocket中将消息拿出，然后解析，再进行消息类型判读，最后将消息发送到目的用户的node 中
+// func recProc(node *Node) {
+// 	for {
+// 		// 获取信息
+// 		_, data, err := node.Conn.ReadMessage()
+// 		if err != nil {
+// 			zap.S().Info("读取消息失败", err)
+// 			return
+// 		}
+
+// 		// 进行简单实现
+// 		msg := Message{}
+// 		err = json.Unmarshal(data, &msg)
+// 		if err != nil {
+// 			zap.S().Info("json解析失败", err)
+// 			return
+// 		}
+
+// 		if msg.Type == 1 {
+// 			zap.S().Info("这是一条私信:", msg.Content)
+// 			tarNode, ok := clientMap[msg.TargetId]
+// 			if !ok {
+// 				zap.S().Info("不存在对应的node", msg.TargetId)
+// 				return
+// 			}
+// 			tarNode.DataQueue <- data
+// 			fmt.Println("发送成功: ", string(data))
+// 		}
+// 	}
+
+// }
+
+// 升级 recProc ，进行udp 连接
 func recProc(node *Node) {
 	for {
 		// 获取信息
 		_, data, err := node.Conn.ReadMessage()
 		if err != nil {
-			zap.S().Info("读取消息失败", err)
+			zap.S().Info("读取信息失败", err)
 			return
 		}
+		// 将消息放进全局channel中，提高系统的并发能力
+		brodMsg(data)
+	}
+}
 
-		// 进行简单实现
-		msg := Message{}
-		err = json.Unmarshal(data, &msg)
-		if err != nil {
-			zap.S().Info("json解析失败", err)
-			return
-		}
+// 全局channel
+var upSendChan chan []byte = make(chan []byte, 1024)
 
-		if msg.Type == 1 {
-			zap.S().Info("这是一条私信:", msg.Content)
-			tarNode, ok := clientMap[msg.TargetId]
-			if !ok {
-				zap.S().Info("不存在对应的node", msg.TargetId)
+func brodMsg(data []byte) {
+	upSendChan <- data
+}
+
+// init 方法,运行message包前调用
+func init() {
+	go UdpSendProc()
+	go UdpRecProc()
+}
+
+func UdpSendProc() {
+	udpConn, err := net.DialUDP("udp", nil, &net.UDPAddr{
+		// 192.168.31.147
+		IP:   net.IPv4(127, 0, 0, 1),
+		Port: 3000,
+		Zone: "",
+	})
+
+	if err != nil {
+		zap.S().Info("拨号udp端口失败", err)
+		return
+	}
+
+	defer udpConn.Close()
+
+	for {
+		select {
+		case data := <-upSendChan:
+			_, err := udpConn.Write(data)
+			if err != nil {
+				zap.S().Info("写入udp消息失败", err)
 				return
 			}
-			tarNode.DataQueue <- data
-			fmt.Println("发送成功: ", string(data))
 		}
 	}
+}
+
+// 完成消息的接收
+func UdpRecProc() {
+	udpConn, err := net.ListenUDP("udp", &net.UDPAddr{
+		IP:   net.IPv4(127, 0, 0, 1),
+		Port: 3000,
+	})
+
+	if err != nil {
+		zap.S().Info("监听udp端口失败", err)
+		return
+	}
+
+	defer udpConn.Close()
+
+	for {
+		var buf [1024]byte
+		n, err := udpConn.Read(buf[0:])
+		if err != nil {
+			zap.S().Info("读取udp数据失败", err)
+			return
+		}
+
+		// 处理发送逻辑
+		dispatch(buf[0:n])
+	}
+}
+
+// dispatch 解析消息，判断聊天类型
+func dispatch(data []byte) {
+	// 解析消息
+	msg := Message{}
+	err := json.Unmarshal(data, &msg)
+	if err != nil {
+		zap.S().Info("消息解析失败", err)
+		return
+	}
+
+	// 判断消息类型
+	switch msg.Type {
+	case 1: // 私聊
+		sendMsg(msg.TargetId, data)
+	case 2: // 群发
+		sendGroupMsg(uint(msg.FormId), uint(msg.TargetId), data)
+	}
+}
+
+// sendMsg 向用户单聊发送消息
+func sendMsg(id int64, msg []byte) {
+	rwLocker.Lock()
+	node, ok := clientMap[id]
+	rwLocker.Unlock()
+
+	if !ok {
+		zap.S().Info("userId 没有对应的node")
+		return
+	}
+	zap.S().Info("targetId: ", id, "node: ", node)
+	if ok {
+		node.DataQueue <- msg
+	}
+}
+
+// sendGroupMsg 群发逻辑
+func sendGroupMsg(formId, target uint, data []byte) (int, error) {
 
 }
