@@ -16,8 +16,10 @@ import (
 func NewRouter() *gin.Engine {
 	r := gin.Default()
 
-	r.Use(middleware.Cors())
-	r.StaticFS("/static", http.Dir("./static"))
+	r.Use(middleware.Cors()) // 使用中间件，处理跨域请求
+
+	r.StaticFS("/static", http.Dir("./static")) // 映射静态文件
+
 	v1 := r.Group("api/v1")
 	{
 		v1.GET("ping", func(c *gin.Context) {

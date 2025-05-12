@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	file, err := ini.Load("./conf/config.ini")
+	file, err := ini.Load("C:/Users/86131/go/src/gin_mall/conf/config.ini")
 	if err != nil {
 		fmt.Println("redis config err", err)
 	}

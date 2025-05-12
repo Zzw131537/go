@@ -13,18 +13,18 @@ import (
 
 type Product struct {
 	gorm.Model
-	Name          string
-	CategoryId    uint
-	Tiitle        string
-	Info          string
-	ImgPath       string
-	Price         string
-	DiscountPrice string
-	OnSale        bool `gorm:"default:false"`
-	Num           int
-	BossId        uint
-	BossName      string
-	BossAvatar    string
+	Name          string // 商品名称
+	CategoryId    uint   // 所属种类
+	Tiitle        string // 标题
+	Info          string //信息
+	ImgPath       string // 图片
+	Price         string // 价格
+	DiscountPrice string // 打折后的价格
+	OnSale        bool   `gorm:"default:false"` // 状态
+	Num           int    // 库存
+	BossId        uint   // 商家id
+	BossName      string // 商家姓名
+	BossAvatar    string // 商家头像
 }
 
 func (product *Product) View() uint64 {

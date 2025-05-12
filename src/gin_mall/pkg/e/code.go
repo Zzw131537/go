@@ -5,6 +5,10 @@
 package e
 
 const (
+	//redis - key
+	Product_Key = "mall:product:"
+	User_Key    = "mall:user:"
+
 	Success       = 200
 	Error         = 500
 	InvalidParams = 400

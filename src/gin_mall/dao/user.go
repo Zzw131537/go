@@ -40,6 +40,7 @@ func (dao *UserDao) GetUserById(id uint) (user *model.User, err error) {
 	return
 }
 
+// 更新用户信息
 func (dao *UserDao) UpdateUserById(id uint, user *model.User) error {
 	return dao.DB.Model(&model.User{}).Where("id=?", id).Updates(&user).Error
 

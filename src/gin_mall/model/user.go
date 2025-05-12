@@ -11,13 +11,13 @@ import (
 
 type User struct {
 	gorm.Model
-	UserName       string `gorm:"unique"`
-	Email          string
-	PasswordDigest string
-	NickName       string
-	Status         string
-	Avatar         string
-	Money          string
+	UserName       string `gorm:"unique"` // 姓名
+	Email          string // 邮箱
+	PasswordDigest string // 加密后的密码
+	NickName       string // 昵称
+	Status         string // 状态
+	Avatar         string // 头像
+	Money          string // 现金
 }
 
 const (

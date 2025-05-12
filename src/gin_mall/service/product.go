@@ -6,6 +6,9 @@ package service
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"mall/cache"
 	"mall/dao"
 	"mall/model"
 	"mall/pkg/e"
@@ -14,6 +17,7 @@ import (
 	"mime/multipart"
 	"strconv"
 	"sync"
+	"time"
 )
 
 type ProductService struct {
@@ -172,24 +176,52 @@ func (service *ProductService) Search(ctx context.Context) serializer.Response {
 	return serializer.BuildListResponse(serializer.BuildProducts(products), uint(len(products)))
 }
 
+// 使用redis 对商品数据进行缓存优化
 func (service *ProductService) Show(ctx context.Context, id string) serializer.Response {
 	code := e.Success
-	pId, _ := strconv.Atoi(id)
-	productDao := dao.NewProductDao(ctx)
-	product, err := productDao.GetProductById(uint(pId))
-	if err != nil {
-		code = e.Error
-		util.LogrusObj.Infoln(err)
+
+	// 先查询key是否存在
+	key := e.Product_Key + id
+	jsonStr, err := cache.RedisClient.Get(key).Result()
+	if err != nil { // 缓存中不存在,则到数据库查询
+		pId, _ := strconv.Atoi(id)
+		productDao := dao.NewProductDao(ctx)
+		product, err := productDao.GetProductById(uint(pId))
+
+		if err != nil { // 数据库查询失败
+			code = e.Error
+			util.LogrusObj.Infoln(err)
+			return serializer.Response{
+				Status: code,
+				Msg:    e.GetMsg(code),
+				Error:  err.Error(),
+			}
+		}
+
+		// 数据库查询成功
+
+		// 将数据库结构哈希成字符串写入redis中
+		value, err := json.Marshal(product)
+		_, err = cache.RedisClient.Set(key, value, 30*time.Minute).Result()
+		if err != nil {
+			fmt.Println("写入redis失败," + err.Error())
+		}
+		// 返回数据
 		return serializer.Response{
 			Status: code,
 			Msg:    e.GetMsg(code),
-			Error:  err.Error(),
+			Data:   serializer.BuildProduct(product),
 		}
 	}
-
+	product := &model.Product{}
+	err = json.Unmarshal([]byte(jsonStr), product)
+	if err != nil {
+		fmt.Println("转换失败!" + err.Error())
+	}
 	return serializer.Response{
 		Status: code,
 		Msg:    e.GetMsg(code),
 		Data:   serializer.BuildProduct(product),
 	}
+
 }

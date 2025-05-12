@@ -1,0 +1,158 @@
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class NextDayTest_DecisionCoverage {
+
+   
+    @Test
+    void testIsValidDate_D_year_le_0_TRUE() {
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(1, 1, 0));
+    }
+
+    @Test
+    void testIsValidDate_D_month_range_TRUE_lt_1() {
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(0, 1, 2023));
+    }
+    @Test
+    void testIsValidDate_D_month_range_TRUE_gt_12() {
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(13, 1, 2023));
+    }
+   
+    @Test
+    void testIsValidDate_D_day_lt_1_TRUE() {
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(1, 0, 2023));
+    }
+    
+    @Test
+    void testIsValidDate_D_month_eq_2_TRUE_isLeap_TRUE_day_le_29_TRUE() { // Feb 29, 2024
+        assertDoesNotThrow(() -> new NextDay(2, 29, 2024));
+    }
+    @Test
+    void testIsValidDate_D_month_eq_2_TRUE_isLeap_TRUE_day_le_29_FALSE() { // Feb 30, 2024
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(2, 30, 2024));
+    }
+    @Test
+    void testIsValidDate_D_month_eq_2_TRUE_isLeap_FALSE_day_le_28_TRUE() { // Feb 28, 2023
+        assertDoesNotThrow(() -> new NextDay(2, 28, 2023));
+    }
+    @Test
+    void testIsValidDate_D_month_eq_2_TRUE_isLeap_FALSE_day_le_28_FALSE() { // Feb 29, 2023
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(2, 29, 2023));
+    }
+  
+    @Test
+    void testIsValidDate_D_month_30days_TRUE_day_le_30_TRUE() { // Apr 30, 2023
+        assertDoesNotThrow(() -> new NextDay(4, 30, 2023));
+    }
+    @Test
+    void testIsValidDate_D_month_30days_TRUE_day_le_30_FALSE() { // Apr 31, 2023
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(4, 31, 2023));
+    }
+    @Test
+    void testIsValidDate_D_month_31days_day_le_31_TRUE() { // Jan 31, 2023
+        assertDoesNotThrow(() -> new NextDay(1, 31, 2023));
+    }
+    @Test
+    void testIsValidDate_D_month_31days_day_le_31_FALSE() { // Jan 32, 2023
+        assertThrows(IllegalArgumentException.class, () -> new NextDay(1, 32, 2023));
+    }
+
+
+  
+    @Test
+    void testGetNextDate_D_m_eq_2_TRUE_isLeap_TRUE_d_gt_29_FALSE() { // Feb 28, 2024 -> Feb 29, 2024
+        assertEquals(new Day(2024, 2, 29), new NextDay(2024, 2, 28).getNextDate());
+    }
+    @Test
+    void testGetNextDate_D_m_eq_2_TRUE_isLeap_TRUE_d_gt_29_TRUE() { // Feb 29, 2024 -> Mar 1, 2024
+        assertEquals(new Day(2024, 3, 1), new NextDay(2024, 2, 29).getNextDate());
+    }
+    @Test
+    void testGetNextDate_D_m_eq_2_TRUE_isLeap_FALSE_d_gt_28_FALSE() { // Feb 27, 2023 -> Feb 28, 2023
+        assertEquals(new Day(2023, 2, 28), new NextDay(2023, 2, 27).getNextDate());
+    }
+    @Test
+    void testGetNextDate_D_m_eq_2_TRUE_isLeap_FALSE_d_gt_28_TRUE() { // Feb 28, 2023 -> Mar 1, 2023
+        assertEquals(new Day(2023, 3, 1), new NextDay(2023, 2, 28).getNextDate());
+    }
+
+    @Test
+    void testGetNextDate_D_m_eq_2_FALSE() { // Mar 10, 2024 -> Mar 11, 2024
+        assertEquals(new Day(2024, 3, 11), new NextDay(2024, 3, 10).getNextDate());
+    }
+
+
+    @Test
+    void testGetNextDate_D_m_30days_TRUE_d_gt_30_FALSE() { // Apr 29, 2023 -> Apr 30, 2023
+        assertEquals(new Day(2023, 4, 30), new NextDay(2023, 4, 29).getNextDate());
+    }
+    @Test
+    void testGetNextDate_D_m_30days_TRUE_d_gt_30_TRUE() { // Apr 30, 2023 -> May 1, 2023
+        assertEquals(new Day(2023, 5, 1), new NextDay(2023, 4, 30).getNextDate());
+    }
+
+    @Test
+    void testGetNextDate_D_m_30days_FALSE() { // Jan 30, 2023 -> Jan 31, 2023
+        assertEquals(new Day(2023, 1, 31), new NextDay(2023, 1, 30).getNextDate());
+    }
+
+    @Test
+    void testGetNextDate_D_m_31days_d_gt_31_FALSE() { // Jan 30, 2023 -> Jan 31, 2023
+        assertEquals(new Day(2023, 1, 31), new NextDay(2023, 1, 30).getNextDate());
+    }
+    @Test
+    void testGetNextDate_D_m_31days_d_gt_31_TRUE() { // Jan 31, 2023 -> Feb 1, 2023
+        assertEquals(new Day(2023, 2, 1), new NextDay(2023, 1, 31).getNextDate());
+    }
+
+    @Test
+    void testGetNextDate_D_m_gt_12_TRUE() { // Dec 31, 2023 -> Jan 1, 2024
+        assertEquals(new Day(2024, 1, 1), new NextDay(2023, 12, 31).getNextDate());
+    }
+    @Test
+    void testDayEquals_D_this_eq_obj_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        assertTrue(d1.equals(d1));
+    }
+    @Test
+    void testDayEquals_D_obj_null_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        assertFalse(d1.equals(null)); // obj == null is true, so returns false
+    }
+    @Test
+    void testDayEquals_D_class_neq_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        assertFalse(d1.equals(new Object())); // getClass != obj.getClass is true
+    }
+    @Test
+    void testDayEquals_D_month_neq_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        Day d2 = new Day(2024,6,6); // month different
+        assertFalse(d1.equals(d2));
+    }
+    @Test
+    void testDayEquals_D_day_neq_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        Day d2 = new Day(2024,5,7); // day different
+        assertFalse(d1.equals(d2));
+    }
+     @Test
+    void testDayEquals_D_year_neq_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        Day d2 = new Day(2023,5,6); // year different
+        assertFalse(d1.equals(d2));
+    }
+    @Test
+    void testDayEquals_All_eq_TRUE() {
+        Day d1 = new Day(2024,5,6);
+        Day d2 = new Day(2024,5,6); // all same
+        assertTrue(d1.equals(d2));
+    }
+    
+
+    @Test
+    void testUtilityMethod_call_for_coverage() {
+        NextDay nd = new NextDay(2023, 1, 1);
+        nd.utilityMethod();
+    }
+}

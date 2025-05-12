@@ -21,9 +21,9 @@ func UserRegister(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusBadRequest, ErrorResponse(err))
 		util.LogrusObj.Info(err)
-
 	}
 }
+
 func UserLogin(c *gin.Context) {
 	var userLogin service.UserService
 	if err := c.ShouldBind(&userLogin); err == nil {

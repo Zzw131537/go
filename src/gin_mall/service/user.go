@@ -41,7 +41,7 @@ type ShowMoneyService struct {
 	Key string `json:"key" form:"key"`
 }
 
-func (service UserService) Register(ctx context.Context) serializer.Response {
+func (service *UserService) Register(ctx context.Context) serializer.Response {
 	var user model.User
 	code := e.Success
 	if service.Key == "" || len(service.Key) != 16 {
@@ -59,6 +59,8 @@ func (service UserService) Register(ctx context.Context) serializer.Response {
 	util.Encrypt.SetKey(service.Key)
 
 	userDao := dao.NewUserDao(ctx)
+
+	// 判断是否已经注册了
 	_, exist, err := userDao.ExistOrNotByUserName(service.UserName)
 	if err != nil {
 		code = e.Error
@@ -141,7 +143,7 @@ func (service *UserService) Login(ctx context.Context) serializer.Response {
 }
 
 // Update 用户修改信息
-func (service UserService) Update(ctx context.Context, uid uint) serializer.Response {
+func (service *UserService) Update(ctx context.Context, uid uint) serializer.Response {
 	fmt.Println("进入service 的Updata函数")
 	fmt.Print("Uid 为:", uid)
 	var user *model.User
