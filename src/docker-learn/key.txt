@@ -1,0 +1,17 @@
+docker
+
+发布环境和项目
+
+基本组成:客户端 服务器 仓库
+
+镜像:(image):
+通过镜像可以创建多个容器
+容器:(container):独立运行一个或一组应用
+仓库:(repository)
+
+安装 docker
+环境准备
+1. linux 基础
+2. centOS7
+3. 使用Xshell 连接远程服务器进行操作
+
