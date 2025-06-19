@@ -19,7 +19,7 @@ type AbstracPear interface {
 	ShowPear()
 }
 
-// 抽象工程
+// 抽象工工厂
 type AbstraFactory interface {
 	CreateApple() AbstracApple
 	CreateBanana() AbstracBananc
