@@ -60,7 +60,10 @@ func (fac *Factory) CreateFruit(kind string) Fruit {
 func main() {
 
 	factory := new(Factory)
-
+	a := []int{1, 2}
+	for _, v := range a {
+		fmt.Println(v)
+	}
 	//fmt.Println(reflect.TypeOf(factory).String())
 	apple := factory.CreateFruit("apple")
 

@@ -1,0 +1,8 @@
+gin
+
+gin 是在 Golang http 标准库的基础上的再封装
+在 http既定框架喜爱，gin 提供了一个gin.Engine 对象作为 Handler 注入其中，
+从而实现了路由的注册、匹配，请求链路的优化
+
+Engine 是 gin 中构建的 Http Handler ，其实现了 net/http包下
+的Handler interface 抽象方法: Handler.ServeHTTP

@@ -22,7 +22,12 @@ func (cw *ClothesWork) Style() {
 
 func main() {
 	c := Clothes{}
+	a := make([]int, 5)
+	mp:=map[string]int
 
+	for _, v := range a {
+		fmt.Println(v)
+	}
 	fmt.Println("在工作")
 	c.OnWork()
 
